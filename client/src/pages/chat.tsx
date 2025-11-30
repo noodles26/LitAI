@@ -67,6 +67,26 @@ export default function Chat() {
       ru: "Здравствуйте… О чём вы хотите поговорить?",
       en: "Hello… What would you like to talk about?",
     },
+    : {
+      ru: "Здравствуйте… О чём вы хотите поговорить?",
+      en: "Hello… What would you like to talk about?",
+    },
+    liza: {
+      ru: "Здравствуйте… О чём вы хотите поговорить?",
+      en: "Hello… What would you like to talk about?",
+    },
+    liza: {
+      ru: "Здравствуйте… О чём вы хотите поговорить?",
+      en: "Hello… What would you like to talk about?",
+    },
+    liza: {
+      ru: "Здравствуйте… О чём вы хотите поговорить?",
+      en: "Hello… What would you like to talk about?",
+    },
+    liza: {
+      ru: "Здравствуйте… О чём вы хотите поговорить?",
+      en: "Hello… What would you like to talk about?",
+    },
   };
 
   // Приветствие
