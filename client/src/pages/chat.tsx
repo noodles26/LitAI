@@ -67,25 +67,25 @@ export default function Chat() {
       ru: "Здравствуйте… О чём вы хотите поговорить?",
       en: "Hello… What would you like to talk about?",
     },
-    : {
-      ru: "Здравствуйте… О чём вы хотите поговорить?",
-      en: "Hello… What would you like to talk about?",
+    natasha_rostova : {
+      ru: "Ой, привет! Рассказывай, что у тебя случилось?",
+      en: "Oh, hi! Go on, tell me what's going on?",
     },
-    liza: {
-      ru: "Здравствуйте… О чём вы хотите поговорить?",
-      en: "Hello… What would you like to talk about?",
+    pierre_bezukhov : {
+      ru: "Здравствуйте. Чем могу помочь вам сегодня?",
+      en: "Hello. How can I help you today?",
     },
-    liza: {
-      ru: "Здравствуйте… О чём вы хотите поговорить?",
-      en: "Hello… What would you like to talk about?",
+    andrei_bolkonsky : {
+      ru: "Привет. Говорите прямо - что вам нужно?",
+      en: "Hello. Speak plainly - what do you need?",
     },
-    liza: {
-      ru: "Здравствуйте… О чём вы хотите поговорить?",
-      en: "Hello… What would you like to talk about?",
+    anna_karenina : {
+      ru: "Здравствуйте. Я слушаю вас. О чём хотите поговорить?",
+      en: "Hello. I'm listening. What would you like to talk about?",
     },
-    liza: {
-      ru: "Здравствуйте… О чём вы хотите поговорить?",
-      en: "Hello… What would you like to talk about?",
+    raskolnikov : {
+      ru: "Ну? Говори. Что тебе нужно сейчас?",
+      en: "Well? Speak. What do you need right now",
     },
   };
 
