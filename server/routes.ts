@@ -3,13 +3,54 @@ import { createServer, Server } from "http";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { characters } from "@shared/characters";
 
-export async function registerRoutes(app: Express): Promise<Server> {
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+const API_KEYS = [
+  process.env.KEY1,
+  process.env.KEY2,
+  process.env.KEY3,
+  process.env.KEY4,
+  process.env.KEY5,
+].filter(Boolean); 
 
-  function detectLanguage(text: string): "ru" | "en" {
-    const cyr = /[а-яёА-ЯЁ]/;
-    return cyr.test(text) ? "ru" : "en";
+let currentKeyIndex = 0;
+
+function getClient() {
+  return new GoogleGenerativeAI(API_KEYS[currentKeyIndex]);
+}
+
+async function generateWithRetry(payload: any) {
+  let attempts = 0;
+
+  while (attempts < API_KEYS.length) {
+    try {
+      const genAI = getClient();
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      const response = await model.generateContent(payload);
+      return response;
+
+    } catch (err: any) {
+      const msg = err.message || "";
+
+      if (msg.includes("429") || msg.includes("quota") || msg.includes("Too Many Requests")) {
+        console.log(
+          `⚠️ Ключ #${currentKeyIndex} закончился. Переключаю на следующий...`
+        );
+        currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
+        attempts++;
+        continue;
+      }
+
+      throw err;
+    }
   }
+
+  throw new Error("Все API-ключи исчерпаны.");
+}
+
+function detectLanguage(text: string): "ru" | "en" {
+  return /[а-яёА-ЯЁ]/.test(text) ? "ru" : "en";
+}
+
+export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/chat", async (req: Request, res: Response) => {
     try {
@@ -30,9 +71,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const detected = detectLanguage(message || "");
       const lang =
-        clientLang === "ru" || clientLang === "en"
-          ? clientLang
-          : detected;
+        clientLang === "ru" || clientLang === "en" ? clientLang : detected;
 
       const translation = selectedCharacter.translations[lang];
 
@@ -47,11 +86,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ? "Отвечай строго на русском, в стиле персонажа."
           : "Reply strictly in English, in the character's voice.";
 
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
-      const result = await model.generateContent({
+      const result = await generateWithRetry({
         systemInstruction: { parts: [{ text: `${systemPrompt}\n\n${instruction}` }] },
-        contents: [{ role: "user", parts: [{ text: message }] }]
+        contents: [{ role: "user", parts: [{ text: message }] }],
       });
 
       const botResponse =
@@ -60,6 +97,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         "";
 
       return res.json({ reply: botResponse });
+
     } catch (err) {
       console.error("[/api/chat] error:", err);
       return res.status(500).json({ error: "Internal server error" });
@@ -68,4 +106,3 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   return createServer(app);
 }
-
