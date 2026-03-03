@@ -1,62 +1,17 @@
 import express, { Express, Request, Response } from "express";
 import { createServer, Server } from "http";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { characters } from "@shared/characters";
 
-const API_KEYS = [
-  process.env.KEY1,
-  process.env.KEY2,
-  process.env.KEY3,
-  process.env.KEY4,
-  process.env.KEY5,
-].filter(Boolean); 
-
-let currentKeyIndex = 0;
-
-function getClient() {
-  return new GoogleGenerativeAI(API_KEYS[currentKeyIndex]);
-}
-
-async function generateWithRetry(payload: any) {
-  let attempts = 0;
-
-  while (attempts < API_KEYS.length) {
-    try {
-      const genAI = getClient();
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-      const response = await model.generateContent(payload);
-      return response;
-
-    } catch (err: any) {
-      const msg = err.message || "";
-
-      if (msg.includes("429") || msg.includes("quota") || msg.includes("Too Many Requests")) {
-        console.log(
-          `⚠️ Ключ #${currentKeyIndex} закончился. Переключаю на следующий...`
-        );
-        currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
-        attempts++;
-        continue;
-      }
-
-      throw err;
-    }
-  }
-
-  throw new Error("Все API-ключи исчерпаны.");
-}
-
-function detectLanguage(text: string): "ru" | "en" {
-  return /[а-яёА-ЯЁ]/.test(text) ? "ru" : "en";
-}
-
 export async function registerRoutes(app: Express): Promise<Server> {
+
+  function detectLanguage(text: string): "ru" | "en" {
+    const cyr = /[а-яёА-ЯЁ]/;
+    return cyr.test(text) ? "ru" : "en";
+  }
 
   app.post("/api/chat", async (req: Request, res: Response) => {
     try {
       const { message, character, lang: clientLang } = req.body;
-
-      console.log("[/api/chat] incoming:", { character, message, clientLang });
 
       const selectedCharacter = characters.find(
         (c) =>
@@ -71,7 +26,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const detected = detectLanguage(message || "");
       const lang =
-        clientLang === "ru" || clientLang === "en" ? clientLang : detected;
+        clientLang === "ru" || clientLang === "en"
+          ? clientLang
+          : detected;
 
       const translation = selectedCharacter.translations[lang];
 
@@ -86,15 +43,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ? "Отвечай строго на русском, в стиле персонажа."
           : "Reply strictly in English, in the character's voice.";
 
-      const result = await generateWithRetry({
-        systemInstruction: { parts: [{ text: `${systemPrompt}\n\n${instruction}` }] },
-        contents: [{ role: "user", parts: [{ text: message }] }],
+      const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": Bearer ${process.env.KEY1}
+        },
+        body: JSON.stringify({
+          model: "deepseek-chat",
+          messages: [
+            {
+              role: "system",
+              content: ${systemPrompt}\n\n${instruction}
+            },
+            {
+              role: "user",
+              content: message
+            }
+          ]
+        })
       });
 
-      const botResponse =
-        result.response.text() ||
-        result.response.candidates?.[0]?.content?.parts?.[0]?.text ||
-        "";
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("DeepSeek error:", data);
+        return res.status(500).json({ error: "DeepSeek API error" });
+      }
+
+      const botResponse = data.choices?.[0]?.message?.content || "";
 
       return res.json({ reply: botResponse });
 
@@ -105,4 +82,4 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   return createServer(app);
-}
+} 
