@@ -68,7 +68,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       if (!response.ok) {
         console.error("DeepSeek error:", data);
-        return res.status(500).json({ error: "DeepSeek API error" });
+        return res.json({
+          reply:
+            "The character seems to be a little busy right now... Please try again in a moment."
+        });
       }
 
       const botResponse = data.choices?.[0]?.message?.content || "";
@@ -77,7 +80,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     } catch (err) {
       console.error("[/api/chat] error:", err);
-      return res.status(500).json({ error: "Internal server error" });
+      return res.json({
+        reply:
+          "Something interrupted the conversation... Please try again." });
     }
   });
 
