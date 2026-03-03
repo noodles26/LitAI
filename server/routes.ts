@@ -47,14 +47,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": Bearer ${process.env.KEY1}
+          "Authorization": `Bearer ${process.env.KEY1}`
         },
         body: JSON.stringify({
           model: "deepseek-chat",
           messages: [
             {
               role: "system",
-              content: ${systemPrompt}\n\n${instruction}
+              content: `${systemPrompt}\n\n${instruction}`
             },
             {
               role: "user",
