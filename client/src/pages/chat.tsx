@@ -29,7 +29,7 @@ export default function Chat() {
   const [, params] = useRoute("/chat/:characterId");
   const [, setLocation] = useLocation();
   const characterId = params?.characterId;
- if (selectedCharacter?.id === "feedback") {
+ if (characterId === "feedback") {
   return (
     <div style={{ padding: "20px" }}>
       <h2>Оставьте ваш отзыв</h2>
