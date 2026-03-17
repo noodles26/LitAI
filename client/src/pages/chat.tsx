@@ -31,7 +31,20 @@ export default function Chat() {
   const characterId = params?.characterId;
 
   const character = characters.find((c) => c.id === characterId);
-  const { language } = useLanguage(); // ← ЯЗЫК
+  const { language } = useLanguage();
+  if (selectedCharacter?.id === "feedback") {
+  return (
+    <div style={{ padding: "20px" }}>
+      <h2>Оставьте ваш отзыв</h2>
+      <iframe
+        src="<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdoqqEEIv0NL3zmfoQRv8NCsJ3Y01BzggR9J6EiceI7uRe90w/viewform?embedded=true" width="640" height="2303" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>"
+        width="100%"
+        height="600"
+        style={{ border: "none" }}
+      />
+    </div>
+  );
+}
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
@@ -45,7 +58,7 @@ export default function Chat() {
     scrollToBottom();
   }, [messages, isTyping]);
 
-  // 🌐 Двуязычные приветствия
+
   const greetings: Record<string, { ru: string; en: string }> = {
     onegin: {
       ru: "Приветствую. Чем могу быть полезен?",
@@ -89,7 +102,6 @@ export default function Chat() {
     },
   };
 
-  // Приветствие
   useEffect(() => {
     if (character && messages.length === 0) {
       const greeting: Message = {
@@ -127,7 +139,6 @@ export default function Chat() {
     setMessages((prev) => [...prev, userMessage]);
     setIsTyping(true);
 
-    // 🌐 отправляем lang + перевод имени
     fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -176,7 +187,7 @@ export default function Chat() {
     ]);
   };
 
-  const t = character.translations[language]; // удобнее
+  const t = character.translations[language];
 
   return (
     <div className="h-screen flex flex-col">
