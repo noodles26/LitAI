@@ -29,10 +29,7 @@ export default function Chat() {
   const [, params] = useRoute("/chat/:characterId");
   const [, setLocation] = useLocation();
   const characterId = params?.characterId;
-
-  const character = characters.find((c) => c.id === characterId);
-  const { language } = useLanguage();
-  if (selectedCharacter?.id === "feedback") {
+ if (selectedCharacter?.id === "feedback") {
   return (
     <div style={{ padding: "20px" }}>
       <h2>Оставьте ваш отзыв</h2>
@@ -44,7 +41,9 @@ export default function Chat() {
       />
     </div>
   );
-}
+ }
+  const character = characters.find((c) => c.id === characterId);
+  const { language } = useLanguage();
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
