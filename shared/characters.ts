@@ -235,5 +235,18 @@ export const characters: Character[] = [
       }
     }
   }, 
+  {
+    id: "feedback",
+    translations: {
+      ru: {
+        name: "Оставить отзыв",
+        systemPrompt: ""
+      },
+      en: {
+        name: "Leave Feedback",
+        systemPrompt: ""
+      }
+    }
+  }
 ];
 
