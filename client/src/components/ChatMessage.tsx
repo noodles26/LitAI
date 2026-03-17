@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +17,35 @@ export function ChatMessage({
   characterAvatar,
   timestamp 
 }: ChatMessageProps) {
+
+  const [explanation, setExplanation] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleExplain = async () => {
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: Объясни ответ персонажа:\n"${content}"\n\nОбъясни:\n- мотивацию\n- связь с сюжетом\n- характер,
+          character: characterName,
+          lang: "ru",
+        }),
+      });
+
+      const data = await res.json();
+      setExplanation(data.reply || "Нет объяснения");
+    } catch (e) {
+      setExplanation("Ошибка при получении объяснения");
+    }
+
+    setLoading(false);
+  };
+
   return (
     <div
       className={cn(
@@ -53,14 +83,22 @@ export function ChatMessage({
             {content}
           </p>
         </div>
+
         {!isUser && (
-  <button
-    className="text-xs opacity-70 hover:opacity-100 transition px-1 mt-1"
-  >
-    📖 Объяснить
-  </button>
-)}
-        
+          <button
+            onClick={handleExplain}
+            className="text-xs opacity-70 hover:opacity-100 transition px-1 mt-1"
+          >
+            {loading ? "..." : "📖 Объяснить"}
+          </button>
+        )}
+
+        {explanation && (
+          <div className="text-xs mt-2 p-2 rounded bg-muted">
+            {explanation}
+          </div>
+        )}
+  
         {timestamp && (
           <span className="text-xs text-muted-foreground px-1">
             {timestamp}
