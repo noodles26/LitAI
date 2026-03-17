@@ -53,6 +53,13 @@ export function ChatMessage({
             {content}
           </p>
         </div>
+        {!isUser && (
+  <button
+    className="text-xs opacity-70 hover:opacity-100 transition px-1 mt-1"
+  >
+    📖 Объяснить
+  </button>
+)}
         
         {timestamp && (
           <span className="text-xs text-muted-foreground px-1">
