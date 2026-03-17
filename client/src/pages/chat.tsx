@@ -34,7 +34,7 @@ export default function Chat() {
     <div style={{ padding: "20px" }}>
       <h2>Оставьте ваш отзыв</h2>
       <iframe
-        src="<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdoqqEEIv0NL3zmfoQRv8NCsJ3Y01BzggR9J6EiceI7uRe90w/viewform?embedded=true" width="640" height="2303" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>"
+        src="https://docs.google.com/forms/d/e/1FAIpQLSdoqqEEIv0NL3zmfoQRv8NCsJ3Y01BzggR9J6EiceI7uRe90w/viewform?embedded=true"
         width="100%"
         height="600"
         style={{ border: "none" }}
